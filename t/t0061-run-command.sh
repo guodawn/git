@@ -37,6 +37,13 @@ test_expect_success !MINGW 'run_command can run a script without a #! line' '
 	test_cmp empty err
 '
 
+test_expect_success 'run_command should not try to execute a directory' '
+	test_when_finished "rm -rf bin/blah" &&
+	mkdir -p bin/blah &&
+	PATH=bin:$PATH test_must_fail test-run-command run-command blah 2>err &&
+	test_i18ngrep "No such file or directory" err
+'
+
 test_expect_success POSIXPERM 'run_command reports EACCES' '
 	cat hello-script >hello.sh &&
 	chmod -x hello.sh &&

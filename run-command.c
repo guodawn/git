@@ -127,6 +127,7 @@ static char *locate_in_PATH(const char *file)
 
 	while (1) {
 		const char *end = strchrnul(p, ':');
+		struct stat st;
 
 		strbuf_reset(&buf);
 
@@ -137,7 +138,7 @@ static char *locate_in_PATH(const char *file)
 		}
 		strbuf_addstr(&buf, file);
 
-		if (!access(buf.buf, F_OK))
+		if (!stat(buf.buf, &st) && S_ISREG(st.st_mode))
 			return strbuf_detach(&buf, NULL);
 
 		if (!*end)
